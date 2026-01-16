@@ -48,4 +48,4 @@ Bash
 
 
 sudo docker exec $(sudo docker ps -q) cat /var/jenkins_home/secrets/initialAdminPassword
-
+![Image](jenkins-home-page.png)
