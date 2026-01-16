@@ -1,0 +1,17 @@
+# Fichiers locaux de Terraform
+.terraform/
+.terraform.lock.hcl
+
+# Fichiers d'état (Contiennent tes secrets en clair !)
+*.tfstate
+*.tfstate.backup
+
+# Variables personnelles et secrets
+*.tfvars
+*.tfvars.json
+.secrets/
+*.pem
+
+# Fichiers systèmes
+.DS_Store
+Thumbs.db
