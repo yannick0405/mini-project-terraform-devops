@@ -61,30 +61,43 @@ module "eip" {
   instance_id = module.ec2.instance_id
 }
 
-# null_resource pour installer Jenkins via Docker Compose
 resource "null_resource" "jenkins_install" {
-  depends_on = [module.ec2]
-  # On force une attente de 30 secondes pour laisser Ubuntu démarrer
-  
+  depends_on = [module.ec2, module.eip]
+
   provisioner "remote-exec" {
     connection {
-    type        = "ssh"
-    host        = module.eip.public_ip # Utilise l'output de ton module EIP
-    user        = "ubuntu"
-    private_key = module.keypair.private_key_pem
-    # Terraform essaiera de se connecter pendant 5 minutes avant d'abandonner
+      type        = "ssh"
+      host        = module.eip.public_ip
+      user        = "ubuntu"
+      private_key = module.keypair.private_key_pem
       timeout     = "5m"
-  }
+    }
+
     inline = [
       "sudo apt update -y",
       "sudo apt install -y docker.io docker-compose",
       "sudo systemctl enable docker --now",
       "sudo usermod -aG docker ubuntu",
-      "mkdir -p ~/jenkins",
+      "mkdir -p ~/jenkins/jenkins_home",
+      "sudo chown -R 1000:1000 ~/jenkins/jenkins_home",
+      
+      # Utilisation de guillemets simples pour le bloc echo pour éviter les conflits
       "echo 'version: \"3\"' > ~/jenkins/docker-compose.yml",
-      "echo 'services:\n  jenkins:\n    image: jenkins/jenkins:lts\n    ports:\n      - \"8080:8080\"\n    volumes:\n      - ./jenkins_home:/var/jenkins_home' >> ~/jenkins/docker-compose.yml",
+      "echo 'services:' >> ~/jenkins/docker-compose.yml",
+      "echo '  jenkins:' >> ~/jenkins/docker-compose.yml",
+      "echo '    image: jenkins/jenkins:lts' >> ~/jenkins/docker-compose.yml",
+      "echo '    container_name: jenkins' >> ~/jenkins/docker-compose.yml",
+      "echo '    restart: always' >> ~/jenkins/docker-compose.yml",
+      "echo '    ports:' >> ~/jenkins/docker-compose.yml",
+      "echo '      - \"8080:8080\"' >> ~/jenkins/docker-compose.yml",
+      "echo '    volumes:' >> ~/jenkins/docker-compose.yml",
+      "echo '      - ./jenkins_home:/var/jenkins_home' >> ~/jenkins/docker-compose.yml",
+      
+      # Lancement de Jenkins
       "cd ~/jenkins && sudo docker-compose up -d",
-      "echo 'Public IP: ${module.ec2.instance_public_ip}' > jenkins_ec2.txt"
+      
+      # GÉNÉRATION DU FICHIER TXT (Correction ici)
+      "echo 'Public IP: ${module.eip.public_ip}' > ~/jenkins_ec2.txt"
     ]
   }
 }
