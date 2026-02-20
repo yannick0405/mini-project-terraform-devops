@@ -1,7 +1,6 @@
 output "public_route_table_id" {
-  description = "ID de la table de routage publique"
-  # Vérifie que dans ton vpc/ressources.tf, la ressource s'appelle bien "public"
-  value       = aws_route_table.public.id 
+  description = "Public route table ID"
+  value       = aws_route_table.public.id
 }
 
 output "vpc_id" {

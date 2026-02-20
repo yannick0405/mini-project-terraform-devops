@@ -15,3 +15,5 @@
 # Fichiers systèmes
 .DS_Store
 Thumbs.db
+# fichier  contenant les identifiants du serveur jenkins
+jenkins_ec2.txt
