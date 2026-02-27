@@ -10,7 +10,7 @@ output "jenkins_dns" {
 
 output "ebs_volume_id" {
   description = "Attached EBS volume ID"
-  value       = module.ebs.ebs_id
+  value       = module.ebs.volume_id
 }
 
 output "jenkins_metadata_file" {

@@ -32,6 +32,6 @@ variable "instance_name" {
 
 variable "root_volume_size" {
   type        = number
-  default     = 8
+  default     = 50
   description = "Taille du volume root en Go"
 }
